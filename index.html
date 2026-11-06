@@ -1,12 +1,123 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=./frontend/index.html">
-  <title>GOD'S EYE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b14">
+  <meta name="description" content="GOD'S EYE — Global Earth Intelligence">
+  <title>GOD'S EYE | عين العراب</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://nominatim.openstreetmap.org">
+  <link rel="stylesheet" href="./src/styles.css">
+  <script src="https://unpkg.com/globe.gl"></script>
 </head>
 <body>
-  <p>Opening GOD'S EYE… <a href="./frontend/index.html">Continue</a></p>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="menu-button" id="menuToggle" aria-label="Toggle menu">☰</button>
+      <div class="brand">
+        <div class="brand-mark">◎</div>
+        <div>
+          <div class="brand-name">GOD'S EYE</div>
+          <div class="brand-sub" data-i18n="subtitle">GLOBAL EARTH INTELLIGENCE</div>
+        </div>
+      </div>
+      <form class="search" id="searchForm">
+        <span>⌕</span>
+        <input id="placeSearch" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث عن مدينة أو دولة أو إحداثيات..." autocomplete="off">
+        <button type="submit" data-i18n="search">بحث</button>
+      </form>
+      <div class="top-actions">
+        <select id="languageSelect" aria-label="Language">
+          <option value="ar">العربية</option>
+          <option value="fa">فارسی</option>
+          <option value="en">English</option>
+        </select>
+        <div class="account-chip"><span class="status-dot"></span><span data-i18n="prototype">نسخة تجريبية</span></div>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="side-heading" data-i18n="modules">الأنظمة</div>
+        <button class="nav-item active" data-panel="overview"><span>◉</span><b data-i18n="overview">نظرة عامة</b></button>
+        <button class="nav-item" data-panel="satellite"><span>◌</span><b data-i18n="satellite">الأقمار الصناعية</b><i>01</i></button>
+        <button class="nav-item" data-panel="cameras"><span>▣</span><b data-i18n="cameras">الكاميرات العامة</b><i>02</i></button>
+        <button class="nav-item" data-panel="aircraft"><span>✈</span><b data-i18n="aircraft">الطائرات</b><i>03</i></button>
+        <button class="nav-item" data-panel="maritime"><span>⌁</span><b data-i18n="maritime">السفن والبحار</b><i>04</i></button>
+        <button class="nav-item" data-panel="weather"><span>☁</span><b data-i18n="weather">الطقس</b><i>05</i></button>
+        <button class="nav-item" data-panel="news"><span>▤</span><b data-i18n="news">الأخبار</b><i>06</i></button>
+        <button class="nav-item" data-panel="disasters"><span>△</span><b data-i18n="disasters">الكوارث</b><i>07</i></button>
+        <button class="nav-item" data-panel="ai"><span>✧</span><b data-i18n="ai">تحليل الذكاء الاصطناعي</b><i>08</i></button>
+        <div class="sidebar-bottom">
+          <div class="side-heading" data-i18n="system">النظام</div>
+          <button class="nav-item" data-panel="timeline"><span>◷</span><b data-i18n="timeline">الخط الزمني</b></button>
+          <button class="nav-item" data-panel="settings"><span>⚙</span><b data-i18n="settings">الإعدادات</b></button>
+          <div class="connection-card">
+            <span class="status-dot amber"></span>
+            <div><b data-i18n="demoMode">وضع التطوير</b><small data-i18n="noLiveFeeds">لا توجد مصادر مباشرة متصلة</small></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <div class="workspace-head">
+          <div>
+            <div class="eyebrow" data-i18n="globalView">العرض العالمي</div>
+            <h1 data-i18n="earthExplorer">مستكشف الأرض</h1>
+          </div>
+          <div class="view-controls">
+            <span class="mode-pill"><span class="status-dot amber"></span><span data-i18n="demoData">واجهة أولية · بيانات غير متصلة</span></span>
+            <button class="icon-button" id="resetGlobe" title="Reset globe">⟳</button>
+          </div>
+        </div>
+
+        <div class="globe-stage">
+          <div id="globeViz" class="globe-canvas"></div>
+          <div class="globe-vignette"></div>
+          <div class="globe-label top-left"><span class="tiny-dot"></span><span data-i18n="earthModel">نموذج أرض ثلاثي الأبعاد</span></div>
+          <div class="globe-label top-right" id="coordinates">LAT 0.000 · LNG 0.000</div>
+          <div class="globe-center-hint" id="globeHint" data-i18n="globeHint">حرّك الكرة الأرضية لاستكشافها</div>
+          <div class="globe-bottom-left">
+            <button class="round-control" id="zoomIn">＋</button>
+            <button class="round-control" id="zoomOut">－</button>
+            <button class="round-control" id="autoRotate">⟳</button>
+          </div>
+          <div class="globe-bottom-right">
+            <span class="legend-dot"></span><span data-i18n="globeLegend">عرض جغرافي تفاعلي</span>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
+          <section class="panel selected-panel">
+            <div class="panel-title"><span data-i18n="selectedLocation">الموقع المحدد</span><span class="panel-kicker" data-i18n="waiting">بانتظار الاختيار</span></div>
+            <div class="selected-place" id="selectedPlace">
+              <div class="place-icon">⌖</div>
+              <div><b data-i18n="noLocation">لم يتم تحديد موقع</b><small data-i18n="searchOrTap">ابحث عن مكان أو اختر نقطة على الكرة</small></div>
+            </div>
+            <div class="coordinates-row"><span id="placeLat">LAT —</span><span id="placeLon">LON —</span></div>
+          </section>
+          <section class="panel layers-panel">
+            <div class="panel-title"><span data-i18n="dataLayers">طبقات البيانات</span><span class="panel-kicker" data-i18n="planned">مخططة</span></div>
+            <div class="layer-chips">
+              <button class="layer-chip" data-layer="satellite"><span>◌</span><span data-i18n="satellite">الأقمار الصناعية</span><em>—</em></button>
+              <button class="layer-chip" data-layer="cameras"><span>▣</span><span data-i18n="cameras">الكاميرات</span><em>—</em></button>
+              <button class="layer-chip" data-layer="aircraft"><span>✈</span><span data-i18n="aircraft">الطائرات</span><em>—</em></button>
+              <button class="layer-chip" data-layer="maritime"><span>⌁</span><span data-i18n="maritime">السفن</span><em>—</em></button>
+              <button class="layer-chip" data-layer="weather"><span>☁</span><span data-i18n="weather">الطقس</span><em>—</em></button>
+              <button class="layer-chip" data-layer="news"><span>▤</span><span data-i18n="news">الأخبار</span><em>—</em></button>
+            </div>
+            <div class="layer-note" id="layerNotice" data-i18n="layerNotice">اختر طبقة لمعرفة حالة ربطها. لن نعرض بيانات وهمية.</div>
+          </section>
+        </div>
+        <footer class="footer-note">
+          <span>GOD'S EYE · PHASE 1</span>
+          <span data-i18n="attribution">الكرة الأرضية بواسطة Globe.gl · البحث الجغرافي بواسطة OpenStreetMap Nominatim</span>
+        </footer>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="./src/app.js"></script>
 </body>
 </html>
